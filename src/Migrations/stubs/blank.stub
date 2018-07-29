@@ -1,0 +1,28 @@
+<?php
+
+use Ahsan\Neoquent\Schema\Blueprint;
+use Ahsan\Neoquent\Migrations\Migration;
+
+class DummyClass extends Migration {
+
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        //
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+    }
+
+}
