@@ -1,4 +1,6 @@
-<?php namespace Ahsan\Neoquent\Query\Grammars;
+<?php
+
+namespace Ahsan\Neoquent\Query\Grammars;
 
 use DateTime;
 use Carbon\Carbon;

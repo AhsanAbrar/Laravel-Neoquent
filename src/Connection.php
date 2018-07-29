@@ -68,10 +68,6 @@ class Connection extends IlluminateConnection {
 		// activate and set the database client connection
 		$this->client = $this->createConnection();
 
-
-$this->statement('MATCH (category:`Category`) WHERE category.description = {description} RETURN *', ['description' => 'Seaweed and fish']);
-
-
 		// We need to initialize a query grammar and the query post processors
 		// which are both very important parts of the database abstractions
 		// so we initialize these to their default values while starting.
@@ -235,7 +231,7 @@ $this->statement('MATCH (category:`Category`) WHERE category.description = {desc
 			// node from the database, and will either be an array or objects.
 			$statement = $me->getCypherQuery($query, $bindings);
 
-			return $statement->getResultSet();
+			return $statement;
 		});
 	}
 
@@ -275,7 +271,7 @@ $this->statement('MATCH (category:`Category`) WHERE category.description = {desc
 			if ($me->pretending()) return true;
 
 			$statement = $me->getCypherQuery($query, $bindings);
-dd($statement);
+
 			$result = $statement->getResultSet();
 
 			return ($rawResults === true) ? $result : $result instanceof ResultSet;

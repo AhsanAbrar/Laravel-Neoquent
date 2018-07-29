@@ -39,9 +39,9 @@ class CypherGrammar extends Grammar {
      */
     protected function compileComponents(Builder $query, $specified = null)
     {
-        $cypher = array();
+        $cypher = [];
 
-        $components = array();
+        $components = [];
 
         // Setup the components that we need to compile
         if ($specified)

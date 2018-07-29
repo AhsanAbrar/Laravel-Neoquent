@@ -111,7 +111,6 @@ class Builder extends IlluminateQueryBuilder {
 	 */
     public function insertGetId(array $values, $sequence = null)
     {
-        dd($this->client->run("CREATE (n:Category { name: 'Category Name', created_at: '2018-07-29 06:32:49' })"));
         // create a neo4j Node
         $node = $this->client->makeNode();
 
@@ -128,7 +127,7 @@ class Builder extends IlluminateQueryBuilder {
 
         // get the saved node id
         $id = $node->getId();
-dd($id);
+
         // set the labels
         $node->addLabels(array_map(array($this, 'makeLabel'), $this->from));
 
@@ -242,10 +241,8 @@ dd($id);
             return count($results);
         }
 
-        $row = null;
-        if ($results->offsetExists(0)) {
-                $row = $results->offsetGet(0);
-                $count = $row->offsetGet(0);
+        if ($results->records()) {
+                $count = $results->records()[0]->values()[0];
                 return $count;
         } else {
                 return 0;

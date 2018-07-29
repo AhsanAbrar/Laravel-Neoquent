@@ -2,17 +2,18 @@
 
 use Closure;
 use Everyman\Neo4j\Node;
-use Everyman\Neo4j\Query\Row;
 use Ahsan\Neoquent\Helpers;
-use Everyman\Neo4j\Query\ResultSet;
+use Everyman\Neo4j\Query\Row;
 use Ahsan\Neoquent\Eloquent\Model;
 use Ahsan\Neoquent\QueryException;
-use Ahsan\Neoquent\Eloquent\Relations\HasOne;
-use Ahsan\Neoquent\Eloquent\Relations\HasMany;
+use Everyman\Neo4j\Query\ResultSet;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Database\Eloquent\Collection;
+use Ahsan\Neoquent\Eloquent\Relations\HasOne;
+use GraphAware\Neo4j\Client\Formatter\Result;
+use Ahsan\Neoquent\Eloquent\Relations\HasMany;
 use Ahsan\Neoquent\Eloquent\Relations\OneRelation;
 use Illuminate\Database\Eloquent\Builder as IlluminateBuilder;
-use Illuminate\Pagination\Paginator;
 
 
 class Builder extends IlluminateBuilder {
@@ -93,38 +94,36 @@ class Builder extends IlluminateBuilder {
     /**
      * Turn Neo4j result set into the corresponding model
      * @param  string $connection
-     * @param  \Everyman\Neo4j\Query\ResultSet $results
+     * @param  \GraphAware\Neo4j\Client\Formatter\Result $results
      * @return array
      */
-    protected function resultsToModels($connection, ResultSet $results, array $columns = [])
+    protected function resultsToModels($connection, Result $results, array $columns = [])
     {
         $models = [];
-
-        if ($results->valid())
+        if ($results->getRecords())
         {
-            $resultColumns = $results->getColumns();
-
-            foreach ($results as $result)
+            // $resultColumns = $results->getColumns();
+            foreach ($results->getRecords() as $result)
             {
-                $attributes = $this->getProperties($resultColumns, $result, $columns);
-
-                // Now that we have the attributes, we first check for mutations
-                // and if exists, we will need to mutate the attributes accordingly.
-                if ($this->shouldMutate($attributes))
-                {
-                    $models[] = $this->mutateToOrigin($result, $attributes);
-                }
-                // This is a regular record that we should deal with the normal way, creating an instance
-                // of the model out of the fetched attributes.
-                else
-                {
-                    $model = $this->model->newFromBuilder($attributes);
-                    $model->setConnection($connection);
-                    $models[] = $model;
+                foreach ($result->values() as $value) {
+                    $attributes = $value->values();
+                    // Now that we have the attributes, we first check for mutations
+                    // and if exists, we will need to mutate the attributes accordingly.
+                    if ($this->shouldMutate($attributes))
+                    {
+                        $models[] = $this->mutateToOrigin($result, $attributes);
+                    }
+                    // This is a regular record that we should deal with the normal way, creating an instance
+                    // of the model out of the fetched attributes.
+                    else
+                    {
+                        $model = $this->model->newFromBuilder($attributes);
+                        //$model->setConnection($connection);
+                        $models[] = $model;
+                    }
                 }
             }
         }
-
         return $models;
     }
 
