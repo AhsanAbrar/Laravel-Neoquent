@@ -111,6 +111,7 @@ class Builder extends IlluminateQueryBuilder {
 	 */
     public function insertGetId(array $values, $sequence = null)
     {
+        dd($this->client->run("CREATE (n:Category { name: 'Category Name', created_at: '2018-07-29 06:32:49' })"));
         // create a neo4j Node
         $node = $this->client->makeNode();
 
@@ -127,7 +128,7 @@ class Builder extends IlluminateQueryBuilder {
 
         // get the saved node id
         $id = $node->getId();
-
+dd($id);
         // set the labels
         $node->addLabels(array_map(array($this, 'makeLabel'), $this->from));
 
