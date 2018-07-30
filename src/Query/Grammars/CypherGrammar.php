@@ -1,4 +1,6 @@
-<?php namespace Ahsan\Neoquent\Query\Grammars;
+<?php
+
+namespace Ahsan\Neoquent\Query\Grammars;
 
 use Illuminate\Database\Query\Builder;
 use Ahsan\Neoquent\Exceptions\InvalidCypherGrammarComponentException;
@@ -532,8 +534,24 @@ class CypherGrammar extends Grammar {
         {
             return ['label' => $label, 'bindings' => $entity];
         }, $values);
+
         // We need to build a list of parameter place-holders of values that are bound to the query.
-        return "CREATE ". $this->prepareEntities($values);
+        return "CREATE ". $this->prepareEntities($values) . " RETURN n";
+    }
+
+    /**
+     * Compile an insert statement into Cypher.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $values
+     * @return string
+     */
+    public function compileInsertMultiple(Builder $query, array $values)
+    {
+        $label = $query->from;
+
+        // We need to build a list of parameter place-holders of values that are bound to the query.
+        return 'UNWIND {props} as map CREATE (n:' . $label[0] . ') SET n = map';
     }
 
     /**

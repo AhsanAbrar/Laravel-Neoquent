@@ -5,9 +5,9 @@ use DateTime, Closure;
 use Illuminate\Support\Arr;
 use Ahsan\Neoquent\Query\Builder;
 use Ahsan\Neoquent\QueryException;
-use Everyman\Neo4j\Query\ResultSet;
 use Everyman\Neo4j\Client as NeoClient;
 use GraphAware\Neo4j\Client\ClientBuilder;
+use GraphAware\Neo4j\Client\Formatter\Result;
 use Ahsan\Neoquent\Query\Processors\Processor;
 use Everyman\Neo4j\Cypher\Query as CypherQuery;
 use Illuminate\Database\Connection as IlluminateConnection;
@@ -271,10 +271,10 @@ class Connection extends IlluminateConnection {
 			if ($me->pretending()) return true;
 
 			$statement = $me->getCypherQuery($query, $bindings);
+dd($statement);
+			$result = $statement;
 
-			$result = $statement->getResultSet();
-
-			return ($rawResults === true) ? $result : $result instanceof ResultSet;
+			return ($rawResults === true) ? $result : $result instanceof Result;
 		});
 	}
 

@@ -111,6 +111,29 @@ class Builder extends IlluminateQueryBuilder {
 	 */
     public function insertGetId(array $values, $sequence = null)
     {
+        $sql = $this->grammar->compileInsertGetId($this, $values, $sequence);
+
+        $values = $this->cleanBindings($values);
+
+        $results = $this->connection->statement($sql, $values, true);
+
+        return $results->getRecord()->values()[0]->identity();
+
+        $attributes = $results->getRecord()->values()[0]->values();
+        $attributes['id'] = $results->getRecord()->values()[0]->identity();
+        return $attributes;
+
+        return '';
+
+        $query->getConnection()->insert($sql, $values);
+
+        $id = $query->getConnection()->getPdo()->lastInsertId($sequence);
+
+        return is_numeric($id) ? (int) $id : $id;
+
+
+        return $this->processor->processInsertGetId($this, $sql, $values, $sequence);
+
         // create a neo4j Node
         $node = $this->client->makeNode();
 
@@ -541,14 +564,13 @@ class Builder extends IlluminateQueryBuilder {
             $bindings[] = $record;
         }
 
-        $cypher = $this->grammar->compileInsert($this, $values);
+        $cypher = $this->grammar->compileInsertMultiple($this, $values);
 
-        // Once we have compiled the insert statement's Cypher we can execute it on the
-        // connection and return a result as a boolean success indicator as that
-        // is the same type of result returned by the raw connection instance.
-        $bindings = $this->cleanBindings($bindings);
-
-        return $this->connection->insert($cypher, $bindings);
+        $bindings = [
+            'props' => $values
+        ];
+//dd($cypher);
+        return $this->connection->statement($cypher, $bindings);
     }
 
     /**

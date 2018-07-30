@@ -2,11 +2,22 @@
 
 namespace Ahsan\Neoquent\Query\Processors;
 
-use \Illuminate\Database\Query\Processors\Processor as IlluminateProcessor;
-use \Illuminate\Database\Query\Builder as IlluminateBuilder;
+use Ahsan\Neoquent\Query\Builder;
 
-class Processor extends IlluminateProcessor
+class Processor
 {
+    /**
+     * Process the results of a "select" query.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @param  array  $results
+     * @return array
+     */
+    public function processSelect(Builder $query, $results)
+    {
+        return $results;
+    }
+
     /**
      * Process an  "insert get ID" query.
      *
@@ -16,11 +27,23 @@ class Processor extends IlluminateProcessor
      * @param  string  $sequence
      * @return int
      */
-    public function processInsertGetId(IlluminateBuilder $query, $sql, $values, $sequence = NULL)
+    public function processInsertGetId(Builder $query, $sql, $values, $sequence = null)
     {
         $query->getConnection()->insert($sql, $values);
-        $id = $query->getConnection()->lastInsertedId();
+
+        $id = $query->getConnection()->getPdo()->lastInsertId($sequence);
 
         return is_numeric($id) ? (int) $id : $id;
+    }
+
+    /**
+     * Process the results of a column listing query.
+     *
+     * @param  array  $results
+     * @return array
+     */
+    public function processColumnListing($results)
+    {
+        return $results;
     }
 }
